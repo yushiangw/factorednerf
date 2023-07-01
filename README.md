@@ -1,5 +1,4 @@
 # Factored Neural Representation for Scene Understanding
-
 [[Project Website]](https://geometry.cs.ucl.ac.uk/projects/2023/factorednerf/)
 [[Arxiv]](https://arxiv.org/abs/2304.10950)
 [[Dataset (6GB)]](https://geometry.cs.ucl.ac.uk/projects/2023/factorednerf/paper_docs/dataset)
@@ -55,7 +54,7 @@ python framework/run_main.py -f configs/SYN/factorednerf/sce_a.yaml --mode rende
 
 
 ## Checkpoints
-
+Please download the checkpoint file [output-syn.zip](https://geometry.cs.ucl.ac.uk/projects/2023/factorednerf/paper_docs/dataset/) and unzip to $FACTNERF_ROOT 
 
 ## Acknowledgement and Licenses
 Some codes are adapted from the awesome repositories: [NiceSlam]( 
