@@ -1,0 +1,9 @@
+**/*.jpg
+**/*.png
+**/*.pkl
+**/*.zip
+**/*.gif
+**/*.blend
+**/*.pyc
+output/*
+
