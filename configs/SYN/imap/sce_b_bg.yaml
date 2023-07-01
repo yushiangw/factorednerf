@@ -1,0 +1,21 @@
+inherit_from: ${FACTNERF_ROOT}/configs/SYN/imap/sce_b_imap.yaml
+
+
+shared: 
+    g_obj_uids:     [0]
+    g_obj_is_rigid: [1]
+
+    ray_step_size: [0.08]
+
+    train_sample_alg: v3_sample_mask
+
+opt_2:    
+  mapping: 
+      joint:  
+          loss:
+              - [ obj_color,           1.0     ]
+              - [ obj_depth,           0.5     ] 
+              #- [ objvec_L1,          100.0   ]
+
+          sce_decay_lr_at:        [5000]
+          net_decay_lr_at:        [5000]

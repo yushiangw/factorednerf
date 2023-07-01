@@ -1,0 +1,27 @@
+inherit_from: null
+
+dataset: 
+      module: src.utils.datasets_v2
+      class:  DYNSYNV3
+
+      train: ${FACTNERF_ROOT}/data/SYN/sce_c_train 
+      valid: ${FACTNERF_ROOT}/data/SYN/sce_c_valid
+
+cam:
+    W:  480
+    H:  320
+    fx: 330
+    fy: 330
+    cx: 240
+    cy: 160
+    crop_edge: 0
+    png_depth_scale: 1.0
+
+shared:
+      g_obj_uids:     [0,1,2]
+      g_obj_is_rigid: [1,1,0]
+
+      near_z:  3.0
+      far_z:  14.0
+      
+      ray_step_size: [0.08,0.04,0.04]

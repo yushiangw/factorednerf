@@ -1,0 +1,11 @@
+inherit_from: ${FACTNERF_ROOT}/configs/SYN/niceslam/sce_b_nice.yaml
+
+
+shared: 
+    g_obj_uids:     [1]
+    g_obj_is_rigid: [1]
+
+    near_z:  1.0
+    far_z:  11.0
+
+    ray_step_size: [0.04] 

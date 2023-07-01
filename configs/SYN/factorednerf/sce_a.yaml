@@ -1,0 +1,170 @@
+inherit_from: ${FACTNERF_ROOT}/configs/SYN/sce_a_ini.yaml
+
+verbose: true 
+script_name:  opt_syn
+
+render_dw_step: 2
+render_points_batch_size: 128
+render_ray_batch_size: 64
+
+sce_type: neus_v8
+
+data: 
+    output_root: ${FACTNERF_ROOT}/output/SYN/factorednerf/
+
+#-----------------------------------
+opt_2:
+  opt_mode:  [ 'mapping' ]
+
+  mapping:
+
+      pre_train_wt:     null 
+      pretrain_single_obj: False
+      run_BA: False
+
+      run_joint: True
+
+      joint:
+
+          total_iters:      800000
+          snapshot_interval:  5000
+          vis_interval:       5000
+          pose_vis_interval: -1 
+
+          use_middle_to_fine_training: False
+          early_stop_th:    -1
+
+          eikonal_sample_num: 2048
+          collect_sample_mask_mode: v2_seg
+
+          rand_sample_num:     512   # N/# img /# obj = sample per images
+          rand_img_per_batch:  2
+          
+          loss:
+              - [ color,                       1.0   ]
+              - [ depth,                       0.1   ] 
+              - [ depth_freespace_weight,      1.0   ]  
+              - [ sf_sdf_normal_v3,            0.1   ]  
+              - [ eikonal_L1,                  0.1   ]  
+              
+
+          opt_dmnet_aft:      0
+
+          ini_net_lr:       1.0e-3
+          ini_sce_lr:       1.0e-3
+
+          ini_deform_lr:    1.0e-4
+          ini_rigidpose_lr: 1.0e-4
+          ini_tocde_lr:     1.0e-2
+
+          lr_decay_ratio:   0.1
+          min_lr:        1.0e-5
+
+          sce_decay_lr_at:        [10000]
+          net_decay_lr_at:        [10000]
+          deformnet_decay_lr_at:  [20000]
+          rigidpose_decay_lr_at:  [ ]
+          tcode_decay_lr_at:      [ 5000,10000]
+
+          use_deform_win_a:        True
+          deform_win_a_delay_step: 2000
+          deform_win_a_interval:   2000
+          deform_win_a_min: 0.0
+
+          use_deform_win_b:        False
+          deform_win_b_interval:   10000
+          deform_win_b_delay_step: 20000 
+
+shared: 
+
+    train_sample_alg: v3_sample_mask
+    ray_sample_mode:  uniform_inv_uniform_x4 
+    ray_sample_num:   128
+
+    apply_depth_filtering: False
+    check_grad: True
+
+    #--------------------------
+    debug_time:      False
+    max_pre_samples: 1024
+
+    pose_init_mode:   est_pose_v1
+    gt_pose_mode:     frame0
+
+    segment_mode: siammask 
+    bbox_mode: anno
+
+    vis_all: False
+    vis_obj: True
+    
+    vis_frames_indices:   [0,-1]
+
+    opt_frames_num: -1
+    opt_eval_fidx_step: 10
+
+#==========================================
+sce_model: 
+  module: src.my_model.mlp_sce_nerf
+  class:  SDF_MLP
+  args:
+    input_dim: 3
+    input_use_encoding: True 
+    input_min_deg: 0
+    input_max_deg: 6
+    sdf_lnum: 8
+    sdf_hdim: 256 
+    out_rgb_hdim: 32
+    use_geo_ini: True
+    use_wn:   True
+    t_dim:    32
+    append_t: False
+    
+    init_variance: 0.3
+    max_invs:      1.0e+6
+    use_variance:  True 
+    geo_radius_init: 1.0
+    geo_std: 0.0001
+    geo_skipc_layer_idx: 4
+    use_bending: False
+    bend_wdim: 2
+
+#==========================================
+network:
+  module: src.my_model.mlp_sce_nerf
+  class:  NeuS_MainMLP
+  args: 
+      rgb_in_ft_dim: 32
+      rgb_lnum: 3
+      rgb_hdim: 256 
+      rgb_use_viewdir: True  
+      rgb_use_nv: False
+      rgb_use_wn: True
+      skip_outter_samples: False
+      append_t:    False
+      use_bending: False
+      bend_wdim: 2
+
+#==========================================
+rigid_posenet: 
+  module: src.my_model.motion
+  class:  RigidPoses_wTCodes 
+  args: 
+    t_dim: 32 
+    optimize_pose:  False
+    use_cano_frame: True
+    cano_idx: 0  
+
+nonrigid_posenet: 
+  module: src.my_model.motion
+  class:  RigidPoses_BijMap_wTCodes
+  args:   
+    optimize_rigid_pose: True
+    bij_use_wn: False
+    t_dim: 32
+    uv_min_deg: 0
+    uv_max_deg: 6
+    w_min_deg:  0
+    w_max_deg:  6
+    use_cano_frame: True
+    cano_idx: 0 
+
